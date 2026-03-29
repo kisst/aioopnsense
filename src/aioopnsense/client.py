@@ -49,9 +49,7 @@ class OPNsenseClient:
         Returns a list of ARP entries, each containing keys like:
         mac, ip, hostname, intf, intf_description, manufacturer.
         """
-        result: list[dict[str, Any]] = await self._get(
-            "diagnostics/interface/get_arp"
-        )
+        result: list[dict[str, Any]] = await self._get("diagnostics/interface/get_arp")
         return result
 
     async def get_interfaces(self) -> dict[str, str]:
@@ -89,13 +87,9 @@ class OPNsenseClient:
                 timeout=self._timeout,
             ) as resp:
                 if resp.status in (401, 403):
-                    raise OPNsenseAuthError(
-                        f"Authentication failed: {resp.status}"
-                    )
+                    raise OPNsenseAuthError(f"Authentication failed: {resp.status}")
                 if resp.status != 200:
-                    raise OPNsenseApiError(
-                        f"API request failed: {resp.status}"
-                    )
+                    raise OPNsenseApiError(f"API request failed: {resp.status}")
                 return await resp.json()
         except OPNsenseApiError:
             raise
