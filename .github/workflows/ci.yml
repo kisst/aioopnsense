@@ -7,15 +7,28 @@ on:
     branches: [main]
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: pip install ruff mypy aiohttp
+      - run: ruff check .
+      - run: ruff format --check .
+      - run: mypy src/
+
   test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.11", "3.12", "3.13"]
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - run: pip install . pytest pytest-asyncio
-      - run: python -m pytest tests/ -v
+          allow-prereleases: true
+      - run: pip install . pytest pytest-asyncio pytest-cov
+      - run: python -m pytest tests/ -v --cov --cov-report=term-missing
